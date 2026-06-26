@@ -1,0 +1,182 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Wuthering Waves Companion — v5 "official game" design system
+   Dark + gold, tech frames, large art (HoYoLab-style)
+   ============================================================ */
+
+@theme {
+  --color-bg: #07080d;
+  --color-surface: #11131d;
+  --color-surface-2: #191c2a;
+  --color-border: #2e3247;
+  --color-border-soft: #20242f;
+
+  --color-fg: #f3f0e8;
+  --color-fg-muted: #a6a394;
+  --color-fg-faint: #6a6757;
+
+  /* Gold is the brand/chrome accent (official-game feel) */
+  --color-accent: #e6c07a;
+  --color-accent-deep: #b8924a;
+  --color-accent-2: #6fd6c4;
+
+  --color-rarity-5: #ffbe5c;
+  --color-rarity-4: #c887ff;
+
+  --color-glacio: #79d6ff;
+  --color-fusion: #ff7a5c;
+  --color-electro: #cf94ff;
+  --color-aero: #62f0bd;
+  --color-spectro: #ffe85c;
+  --color-havoc: #ff6bb0;
+
+  --font-display: "Oxanium", "Segoe UI", system-ui, sans-serif;
+  --font-sans: "Sora", "Segoe UI", system-ui, sans-serif;
+
+  --radius-card: 14px;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border-soft);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* Warm, subtle aurora backdrop */
+  #root {
+    position: relative;
+    isolation: isolate;
+  }
+  #root::before {
+    content: "";
+    position: fixed;
+    inset: -10%;
+    z-index: -2;
+    background:
+      radial-gradient(45% 55% at 85% 0%, rgba(230, 192, 122, 0.10), transparent 60%),
+      radial-gradient(45% 55% at 10% 100%, rgba(111, 214, 196, 0.08), transparent 60%),
+      radial-gradient(40% 40% at 50% 50%, rgba(200, 135, 255, 0.04), transparent 60%);
+    animation: aurora 30s ease-in-out infinite alternate;
+    will-change: transform;
+  }
+  #root::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      radial-gradient(1.5px 1.5px at 20% 30%, rgba(255, 240, 210, 0.5), transparent),
+      radial-gradient(1.5px 1.5px at 75% 55%, rgba(255, 240, 210, 0.35), transparent),
+      radial-gradient(1px 1px at 45% 85%, rgba(255, 240, 210, 0.35), transparent),
+      radial-gradient(1px 1px at 88% 18%, rgba(255, 240, 210, 0.3), transparent);
+    opacity: 0.5;
+    animation: twinkle 7s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  @keyframes aurora {
+    0% { transform: translate3d(0,0,0) scale(1); }
+    100% { transform: translate3d(1.5%,-1.5%,0) scale(1.06); }
+  }
+  @keyframes twinkle { 0% { opacity: 0.3 } 100% { opacity: 0.6 } }
+  @keyframes float-soft { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+  @keyframes shine-sweep { 0% { transform: translateX(-120%) rotate(8deg) } 100% { transform: translateX(220%) rotate(8deg) } }
+
+  h1, h2, h3 { font-family: var(--font-display); letter-spacing: -0.01em; }
+
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(var(--color-accent-deep), var(--color-accent));
+    border-radius: 8px;
+    border: 2px solid var(--color-bg);
+  }
+}
+
+@layer components {
+  .glass {
+    position: relative;
+    background: linear-gradient(165deg, rgba(25, 28, 42, 0.82), rgba(17, 19, 29, 0.62));
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-border-soft);
+    border-radius: var(--radius-card);
+  }
+  /* gold hairline at the top edge — official-game accent */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(180deg, rgba(230, 192, 122, 0.35), transparent 30%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+  .glass-hover {
+    transition: border-color 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .glass-hover:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-accent) 25%, transparent),
+      0 18px 48px -18px rgba(0,0,0,0.8);
+  }
+
+  /* Tech frame — angled corner cut + gold edge, official-game card */
+  .tech {
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+
+  /* Section heading with gold tab */
+  .section-tab {
+    position: relative;
+    padding-left: 14px;
+  }
+  .section-tab::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 50%;
+    width: 4px; height: 1.1em;
+    transform: translateY(-50%);
+    background: linear-gradient(var(--color-accent), var(--color-accent-deep));
+    box-shadow: 0 0 10px var(--color-accent);
+  }
+
+  .display { font-family: var(--font-display); }
+  .float { animation: float-soft 5s ease-in-out infinite; }
+  .gold-text { color: var(--color-accent); }
+
+  .holo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 30%, rgba(255,245,220,0.18) 45%, rgba(255,245,220,0.05) 55%, transparent 70%);
+    transform: translateX(-120%) rotate(8deg);
+    pointer-events: none;
+  }
+  .group:hover .holo::after { animation: shine-sweep 0.9s ease; }
+
+  .news-content { color: var(--color-fg-muted); font-size: 0.92rem; line-height: 1.7; }
+  .news-content img { max-width: 100%; height: auto; border-radius: 10px; margin: 0.75rem 0; }
+  .news-content p { margin: 0.6rem 0; }
+  .news-content h1, .news-content h2, .news-content h3 { color: var(--color-fg); font-weight: 600; margin: 1.1rem 0 0.5rem; }
+  .news-content a { color: var(--color-accent); text-decoration: underline; }
+  .news-content table { width: 100%; border-collapse: collapse; margin: 0.75rem 0; display: block; overflow-x: auto; }
+  .news-content td, .news-content th { border: 1px solid var(--color-border-soft); padding: 6px 10px; }
+}
