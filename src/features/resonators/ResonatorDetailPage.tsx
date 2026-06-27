@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { cdnImg } from "@/lib/img";
 import { Link, useParams } from "react-router-dom";
 import {
   ArrowLeft,
@@ -43,7 +44,9 @@ function fmtQty(n: number) {
 export function ResonatorDetailPage() {
   const { slug } = useParams();
   const r = slug ? getResonator(slug) : undefined;
-  const [bannerFailed, setBannerFailed] = useState(false);
+  const [bannerStage, setBannerStage] = useState<"proxy" | "original" | "failed">(
+    "proxy",
+  );
 
   if (!r) {
     return (
@@ -87,11 +90,17 @@ export function ResonatorDetailPage() {
                 background: `radial-gradient(120% 90% at 50% 0%, ${accent}40, var(--color-surface-2) 75%)`,
               }}
             />
-            {r.images.banner && !bannerFailed ? (
+            {r.images.banner && bannerStage !== "failed" ? (
               <img
-                src={r.images.banner}
+                src={
+                  bannerStage === "proxy"
+                    ? cdnImg(r.images.banner, 700)
+                    : r.images.banner
+                }
                 alt={r.name}
-                onError={() => setBannerFailed(true)}
+                onError={() =>
+                  setBannerStage((s) => (s === "proxy" ? "original" : "failed"))
+                }
                 className="absolute inset-0 h-full w-full object-cover object-top"
               />
             ) : (

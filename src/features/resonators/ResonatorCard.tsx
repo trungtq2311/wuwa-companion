@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ElementBadge } from "@/components/ElementBadge";
 import { RarityStars } from "@/components/RarityStars";
 import type { Resonator } from "@/data/wuwa";
+import { cdnImg } from "@/lib/img";
 
 const MAX_TILT = 14;
 
@@ -15,9 +16,13 @@ export function ResonatorCard({
   index?: number;
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
-  const [failed, setFailed] = useState(false);
   const accent = r.element.color;
-  const img = r.images.banner || r.images.avatar;
+  const original = r.images.banner || r.images.avatar;
+  // Try the resized proxy first; on error fall back to the original URL, then
+  // to the letter placeholder.
+  const [stage, setStage] = useState<"proxy" | "original" | "failed">("proxy");
+  const img =
+    stage === "proxy" ? cdnImg(original, 420) : stage === "original" ? original : null;
 
   function onMove(e: React.MouseEvent) {
     const el = ref.current;
@@ -68,13 +73,15 @@ export function ResonatorCard({
               background: `radial-gradient(120% 80% at 50% 0%, ${accent}40, var(--color-surface-2) 72%)`,
             }}
           />
-          {img && !failed ? (
+          {img ? (
             <img
               src={img}
               alt={r.name}
               loading="lazy"
               decoding="async"
-              onError={() => setFailed(true)}
+              onError={() =>
+                setStage((s) => (s === "proxy" ? "original" : "failed"))
+              }
               className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-[1.08]"
               style={{ transform: "translateZ(20px)" }}
             />

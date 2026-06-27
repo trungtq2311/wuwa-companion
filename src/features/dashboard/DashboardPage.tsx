@@ -7,6 +7,7 @@ import { RESONATORS, MANIFEST, type Resonator } from "@/data/wuwa";
 import { ElementBadge } from "@/components/ElementBadge";
 import { RarityStars } from "@/components/RarityStars";
 import { useAsync } from "@/lib/useAsync";
+import { cdnImg } from "@/lib/img";
 import { fetchNewsList } from "@/features/news/api";
 import { BUNDLED_BANNERS, loadBanners } from "@/features/banners/bannersData";
 
@@ -38,8 +39,14 @@ export function DashboardPage() {
         {/* splash art */}
         {hero.images.banner && (
           <img
-            src={hero.images.banner}
+            src={cdnImg(hero.images.banner, 700)}
             alt={hero.name}
+            onError={(e) => {
+              // proxy failed → fall back to the original CDN url once
+              const el = e.currentTarget;
+              if (el.src !== hero.images.banner && hero.images.banner)
+                el.src = hero.images.banner;
+            }}
             className="absolute right-0 top-0 h-full w-2/3 object-cover object-top"
           />
         )}

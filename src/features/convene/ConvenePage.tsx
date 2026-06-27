@@ -8,7 +8,6 @@ import {
   ChevronDown,
   Sparkles,
   Info,
-  Wand2,
 } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { RarityStars } from "@/components/RarityStars";
@@ -81,29 +80,6 @@ export function ConvenePage() {
     }
   }
 
-  async function autoDetect() {
-    setError(null);
-    setImported(null);
-    setBusy(true);
-    try {
-      const { invoke } = await import("@tauri-apps/api/core");
-      const detected = await invoke<string | null>("find_convene_url");
-      if (!detected) {
-        setError(
-          "Không thấy URL trong log. Hãy MỞ Convene → History trong game (game đang chạy) rồi bấm lại.",
-        );
-        return;
-      }
-      await analyze(detected);
-    } catch {
-      setError(
-        "Tự động dò chỉ chạy trong app desktop. Trong trình duyệt, hãy dán URL thủ công.",
-      );
-    } finally {
-      setBusy(false);
-    }
-  }
-
   return (
     <>
       <PageHeader
@@ -125,23 +101,12 @@ export function ConvenePage() {
             />
           </div>
           <button
-            onClick={autoDetect}
-            disabled={busy}
-            className="flex items-center justify-center gap-2 rounded-xl border border-[var(--color-accent)]/50 bg-[var(--color-accent)]/12 px-4 py-2 text-sm font-semibold text-[var(--color-accent)] transition-transform hover:scale-[1.02] disabled:opacity-40"
-          >
-            {busy ? (
-              <Loader2 size={16} className="animate-spin" />
-            ) : (
-              <Wand2 size={16} />
-            )}
-            Tự động dò
-          </button>
-          <button
             onClick={() => analyze(url)}
             disabled={busy || !url.trim()}
             className="flex items-center justify-center gap-2 rounded-xl px-5 py-2 text-sm font-semibold text-[var(--color-bg)] transition-transform hover:scale-[1.02] disabled:opacity-40"
             style={{ background: ACCENT }}
           >
+            {busy ? <Loader2 size={16} className="animate-spin" /> : null}
             Phân tích
           </button>
         </div>
@@ -184,14 +149,18 @@ export function ConvenePage() {
 
         {showHelp && (
           <ol className="mt-3 flex flex-col gap-1.5 border-t border-[var(--color-border-soft)] pt-3 text-xs text-[var(--color-fg-muted)]">
-            <li>1. Trong game mở <b>Convene → History</b> (game đang chạy), rồi bấm <b>Tự động dò</b>.</li>
             <li>
-              2. Nếu báo không thấy: bản game 3.x mới <b>không ghi URL ra log</b>
-              nên không tự lấy được (giới hạn của game, mọi tool đều vậy).
+              1. Bản game 3.x <b>không ghi URL Convene ra log/đĩa</b>, nên không
+              app nào tự lấy được URL trên máy này (giới hạn của game).
+            </li>
+            <li>
+              2. Nếu bạn lấy được URL Convene History bằng cách khác, dán vào ô
+              trên rồi bấm <b>Phân tích</b> để nhập lịch sử thật.
             </li>
             <li className="text-[var(--color-accent)]">
-              → Khi đó dùng <b>"Nhập pity thủ công"</b> bên dưới: đếm số lần quay
-              kể từ sau 5★ gần nhất trong bảng History.
+              → Cách đơn giản nhất: dùng <b>"Nhập pity thủ công"</b> bên dưới —
+              mở Convene → History trong game, đếm số lần quay kể từ sau 5★ gần
+              nhất.
             </li>
           </ol>
         )}
