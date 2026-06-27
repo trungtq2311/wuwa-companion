@@ -14,7 +14,6 @@ import { BannerCountdown } from "@/features/banners/BannerCountdown";
 
 const accentByPath: Record<string, string> = {
   "/resonators": "var(--color-glacio)",
-  "/convene": "var(--color-electro)",
   "/news": "var(--color-spectro)",
   "/codes": "var(--color-spectro)",
   "/banners": "var(--color-fusion)",
@@ -48,7 +47,7 @@ export function DashboardPage() {
               if (el.src !== hero.images.banner && hero.images.banner)
                 el.src = hero.images.banner;
             }}
-            className="absolute right-0 top-0 h-full w-2/3 object-cover object-top"
+            className="pointer-events-none absolute bottom-0 right-0 h-[112%] w-auto max-w-[58%] object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.45)]"
           />
         )}
         {/* gradient veils */}

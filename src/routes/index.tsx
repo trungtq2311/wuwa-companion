@@ -12,9 +12,6 @@ const ResonatorsPage = lazy(() =>
 const ResonatorDetailPage = lazy(() =>
   import("@/features/resonators/ResonatorDetailPage").then((m) => ({ default: m.ResonatorDetailPage })),
 );
-const ConvenePage = lazy(() =>
-  import("@/features/convene/ConvenePage").then((m) => ({ default: m.ConvenePage })),
-);
 const NewsPage = lazy(() =>
   import("@/features/news/NewsPage").then((m) => ({ default: m.NewsPage })),
 );
@@ -26,9 +23,6 @@ const CodesPage = lazy(() =>
 );
 const BannersPage = lazy(() =>
   import("@/features/banners/BannersPage").then((m) => ({ default: m.BannersPage })),
-);
-const ToolsPage = lazy(() =>
-  import("@/features/tools/ToolsPage").then((m) => ({ default: m.ToolsPage })),
 );
 const MapPage = lazy(() =>
   import("@/features/map/MapPage").then((m) => ({ default: m.MapPage })),
@@ -42,12 +36,10 @@ export const routes: RouteObject[] = [
       { index: true, element: <DashboardPage /> },
       { path: "resonators", element: <ResonatorsPage /> },
       { path: "resonators/:slug", element: <ResonatorDetailPage /> },
-      { path: "convene", element: <ConvenePage /> },
       { path: "news", element: <NewsPage /> },
       { path: "news/:id", element: <NewsDetailPage /> },
       { path: "codes", element: <CodesPage /> },
       { path: "banners", element: <BannersPage /> },
-      { path: "tools", element: <ToolsPage /> },
       { path: "map", element: <MapPage /> },
       { path: "*", element: <Navigate to="/" replace /> },
     ],

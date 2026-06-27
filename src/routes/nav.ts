@@ -1,11 +1,9 @@
 import {
   LayoutDashboard,
   Users,
-  History,
   Newspaper,
   Gift,
   CalendarClock,
-  Calculator,
   Map,
   type LucideIcon,
 } from "lucide-react";
@@ -32,12 +30,6 @@ export const NAV_ITEMS: NavItem[] = [
     description: "Tra cứu & build",
   },
   {
-    path: "/convene",
-    label: "Convene",
-    icon: History,
-    description: "Pity & lịch sử thật",
-  },
-  {
     path: "/news",
     label: "News",
     icon: Newspaper,
@@ -54,12 +46,6 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Banners",
     icon: CalendarClock,
     description: "Lịch & leak banner",
-  },
-  {
-    path: "/tools",
-    label: "Tiện ích",
-    icon: Calculator,
-    description: "Tính pull & farm",
   },
   {
     path: "/map",
