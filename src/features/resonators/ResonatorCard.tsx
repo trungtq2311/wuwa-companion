@@ -17,7 +17,9 @@ export function ResonatorCard({
 }) {
   const ref = useRef<HTMLAnchorElement>(null);
   const accent = r.element.color;
-  const original = r.images.banner || r.images.avatar;
+  // Prefer real Convene key art (the ~11 featured 5★ that have it) for a nicer
+  // card; fall back to the standee render, then the avatar.
+  const original = r.images.gachaArt || r.images.banner || r.images.avatar;
   // Try the resized proxy first; on error fall back to the original URL, then
   // to the letter placeholder.
   const [stage, setStage] = useState<"proxy" | "original" | "failed">("proxy");
