@@ -20,12 +20,7 @@ const accentByPath: Record<string, string> = {
 };
 
 function pickFeatured(): Resonator {
-  // Prefer characters that have real Convene (gacha) key art so the hero looks
-  // like an actual banner; fall back to any 5★ with a splash render.
-  const withGacha = RESONATORS.filter((r) => r.rarity === 5 && r.images.gachaArt);
-  const pool = withGacha.length
-    ? withGacha
-    : RESONATORS.filter((r) => r.rarity === 5 && r.images.banner);
+  const pool = RESONATORS.filter((r) => r.rarity === 5 && r.images.banner);
   return pool[Math.floor(Math.random() * pool.length)] ?? RESONATORS[0];
 }
 
@@ -41,36 +36,19 @@ export function DashboardPage() {
     <div className="flex flex-col gap-6">
       {/* Cinematic hero */}
       <section className="glass tech relative h-[260px] overflow-hidden sm:h-[330px]">
-        {/* splash art — real Convene key art (figure over its banner background)
-            when available, otherwise the standee render */}
-        {hero.images.gachaArt ? (
-          <>
-            {hero.images.gachaBg && (
-              <img
-                src={cdnImg(hero.images.gachaBg, 900)}
-                alt=""
-                className="pointer-events-none absolute inset-0 h-full w-full object-cover object-center"
-              />
-            )}
-            <img
-              src={cdnImg(hero.images.gachaArt, 800)}
-              alt={hero.name}
-              className="pointer-events-none absolute bottom-0 right-0 h-[124%] w-auto max-w-[66%] object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-            />
-          </>
-        ) : (
-          hero.images.banner && (
-            <img
-              src={cdnImg(hero.images.banner, 700)}
-              alt={hero.name}
-              onError={(e) => {
-                const el = e.currentTarget;
-                if (el.src !== hero.images.banner && hero.images.banner)
-                  el.src = hero.images.banner;
-              }}
-              className="pointer-events-none absolute bottom-0 right-0 h-[112%] w-auto max-w-[58%] object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.45)]"
-            />
-          )
+        {/* splash art */}
+        {hero.images.banner && (
+          <img
+            src={cdnImg(hero.images.banner, 700)}
+            alt={hero.name}
+            onError={(e) => {
+              // proxy failed → fall back to the original CDN url once
+              const el = e.currentTarget;
+              if (el.src !== hero.images.banner && hero.images.banner)
+                el.src = hero.images.banner;
+            }}
+            className="pointer-events-none absolute bottom-0 right-0 h-[112%] w-auto max-w-[58%] object-contain object-bottom drop-shadow-[0_0_30px_rgba(0,0,0,0.45)]"
+          />
         )}
         {/* gradient veils */}
         <div className="absolute inset-0 bg-gradient-to-r from-[var(--color-surface)] via-[var(--color-surface)]/85 to-transparent" />

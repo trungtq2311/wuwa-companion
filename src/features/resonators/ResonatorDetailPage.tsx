@@ -90,13 +90,7 @@ export function ResonatorDetailPage() {
                 background: `radial-gradient(120% 90% at 50% 0%, ${accent}40, var(--color-surface-2) 75%)`,
               }}
             />
-            {r.images.gachaArt ? (
-              <img
-                src={cdnImg(r.images.gachaArt, 600)}
-                alt={r.name}
-                className="absolute inset-0 h-full w-full object-contain object-bottom drop-shadow-[0_0_24px_rgba(0,0,0,0.4)]"
-              />
-            ) : r.images.banner && bannerStage !== "failed" ? (
+            {r.images.banner && bannerStage !== "failed" ? (
               <img
                 src={
                   bannerStage === "proxy"
