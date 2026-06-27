@@ -7,7 +7,9 @@
       "status": "current",
       "type": "character",
       "featured5": ["Cartethyia"],
-      "featured4": ["Yuanwu", "Aalto", "Baizhi"]
+      "featured4": ["Yuanwu", "Aalto", "Baizhi"],
+      "start": "2026-06-18",
+      "end": "2026-07-09"
     },
     {
       "version": "3.5",

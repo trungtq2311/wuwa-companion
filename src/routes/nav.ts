@@ -5,6 +5,8 @@ import {
   Newspaper,
   Gift,
   CalendarClock,
+  Calculator,
+  Map,
   type LucideIcon,
 } from "lucide-react";
 
@@ -52,5 +54,17 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Banners",
     icon: CalendarClock,
     description: "Lịch & leak banner",
+  },
+  {
+    path: "/tools",
+    label: "Tiện ích",
+    icon: Calculator,
+    description: "Tính pull & farm",
+  },
+  {
+    path: "/map",
+    label: "Bản đồ",
+    icon: Map,
+    description: "Map rương & nguyên liệu",
   },
 ];

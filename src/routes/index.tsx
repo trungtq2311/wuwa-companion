@@ -27,6 +27,12 @@ const CodesPage = lazy(() =>
 const BannersPage = lazy(() =>
   import("@/features/banners/BannersPage").then((m) => ({ default: m.BannersPage })),
 );
+const ToolsPage = lazy(() =>
+  import("@/features/tools/ToolsPage").then((m) => ({ default: m.ToolsPage })),
+);
+const MapPage = lazy(() =>
+  import("@/features/map/MapPage").then((m) => ({ default: m.MapPage })),
+);
 
 export const routes: RouteObject[] = [
   {
@@ -41,6 +47,8 @@ export const routes: RouteObject[] = [
       { path: "news/:id", element: <NewsDetailPage /> },
       { path: "codes", element: <CodesPage /> },
       { path: "banners", element: <BannersPage /> },
+      { path: "tools", element: <ToolsPage /> },
+      { path: "map", element: <MapPage /> },
       { path: "*", element: <Navigate to="/" replace /> },
     ],
   },

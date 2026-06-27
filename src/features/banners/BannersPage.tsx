@@ -5,6 +5,7 @@ import { PageHeader } from "@/components/PageHeader";
 import { RESONATORS } from "@/data/wuwa";
 import { RarityStars } from "@/components/RarityStars";
 import { BUNDLED_BANNERS, loadBanners, type BannerInfo } from "./bannersData";
+import { BannerCountdown } from "./BannerCountdown";
 
 const ACCENT = "var(--color-electro)";
 
@@ -34,6 +35,10 @@ export function BannersPage() {
         subtitle={`Lịch banner hiện tại & sắp tới · cập nhật ${BANNERS_LAST_UPDATED} · nguồn preview/cộng đồng.`}
         accent={ACCENT}
       />
+
+      <div className="mb-6">
+        <BannerCountdown schedule={data.schedule} />
+      </div>
 
       <Section icon={<Radio size={15} />} title="Đang diễn ra" banners={current} />
       <div className="h-6" />

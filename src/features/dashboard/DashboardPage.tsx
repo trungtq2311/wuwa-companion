@@ -10,6 +10,7 @@ import { useAsync } from "@/lib/useAsync";
 import { cdnImg } from "@/lib/img";
 import { fetchNewsList } from "@/features/news/api";
 import { BUNDLED_BANNERS, loadBanners } from "@/features/banners/bannersData";
+import { BannerCountdown } from "@/features/banners/BannerCountdown";
 
 const accentByPath: Record<string, string> = {
   "/resonators": "var(--color-glacio)",
@@ -197,7 +198,10 @@ export function DashboardPage() {
           ) : (
             <div className="text-sm text-[var(--color-fg-faint)]">—</div>
           )}
-          <div className="mt-4 border-t border-[var(--color-border-soft)] pt-3 text-[11px] text-[var(--color-fg-faint)]">
+          <div className="mt-3 border-t border-[var(--color-border-soft)] pt-3">
+            <BannerCountdown schedule={schedule} compact />
+          </div>
+          <div className="mt-3 border-t border-[var(--color-border-soft)] pt-3 text-[11px] text-[var(--color-fg-faint)]">
             {RESONATORS.length} nhân vật · nguồn {MANIFEST.source.split(" ")[0]}
           </div>
         </div>

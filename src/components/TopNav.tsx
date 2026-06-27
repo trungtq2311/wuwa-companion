@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Waves } from "lucide-react";
@@ -5,6 +6,16 @@ import { NAV_ITEMS } from "@/routes/nav";
 import { cn } from "@/lib/utils";
 
 export function TopNav() {
+  const [version, setVersion] = useState<string>("");
+  useEffect(() => {
+    // Real app version from the Tauri runtime (matches the installed build);
+    // stays blank in the browser/dev preview.
+    import("@tauri-apps/api/app")
+      .then((m) => m.getVersion())
+      .then(setVersion)
+      .catch(() => {});
+  }, []);
+
   return (
     <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-2 border-b border-[var(--color-border-soft)] bg-[var(--color-bg)]/85 px-3 backdrop-blur-xl sm:gap-4 sm:px-5">
       {/* Brand */}
@@ -56,9 +67,11 @@ export function TopNav() {
         ))}
       </nav>
 
-      <span className="hidden shrink-0 text-[11px] text-[var(--color-fg-faint)] sm:block">
-        v0.5.1
-      </span>
+      {version && (
+        <span className="hidden shrink-0 text-[11px] text-[var(--color-fg-faint)] sm:block">
+          v{version}
+        </span>
+      )}
     </header>
   );
 }
