@@ -1,0 +1,23 @@
+{
+  "lastUpdated": "2026-06-26",
+  "codes": [
+    {
+      "code": "WUTHERINGGIFT",
+      "reward": "Astrite ×50 + nguyên liệu",
+      "status": "permanent",
+      "note": "Code vĩnh viễn cho người chơi mới."
+    },
+    {
+      "code": "WUTHERINGGIFT3",
+      "reward": "Astrite + Shell Credit",
+      "status": "active"
+    }
+  ],
+  "redeemSteps": [
+    "Mở game → Terminal (góc trên trái)",
+    "Settings → Other → Redemption Code",
+    "Dán code và xác nhận",
+    "Nhận quà trong hộp thư"
+  ],
+  "officialNewsUrl": "https://wutheringwaves.kurogames.com/en/main/news"
+}

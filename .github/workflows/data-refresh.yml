@@ -1,0 +1,43 @@
+name: Refresh data
+
+# Re-runs the data build daily and commits the normalized JSON back to the repo
+# when it actually changed. The app fetches these files at runtime (with a local
+# TTL cache + bundled fallback), so content can refresh without an app update.
+
+on:
+  schedule:
+    - cron: "0 22 * * *" # 05:00 ICT daily
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild data
+        run: node scripts/build-data.mjs
+
+      - name: Commit if data changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain src/data/wuwa)" ]; then
+            git add src/data/wuwa
+            git commit -m "chore(data): daily refresh [skip ci]"
+            git push
+            echo "Data updated."
+          else
+            echo "No data changes."
+          fi

@@ -1,13 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Copy, Check, Gift, ExternalLink, Info } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
-import {
-  GIFT_CODES,
-  CODES_LAST_UPDATED,
-  REDEEM_STEPS,
-  OFFICIAL_NEWS_URL,
-  type GiftCode,
-} from "./codesData";
+import { BUNDLED_CODES, loadCodes, type GiftCode } from "./codesData";
 import { cn } from "@/lib/utils";
 
 const ACCENT = "var(--color-spectro)";
@@ -20,6 +14,17 @@ const STATUS: Record<GiftCode["status"], { label: string; color: string }> = {
 
 export function CodesPage() {
   const [copied, setCopied] = useState<string | null>(null);
+  const [data, setData] = useState(BUNDLED_CODES);
+
+  useEffect(() => {
+    let alive = true;
+    loadCodes().then((d) => alive && setData(d));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const { codes: GIFT_CODES, redeemSteps: REDEEM_STEPS, officialNewsUrl: OFFICIAL_NEWS_URL, lastUpdated: CODES_LAST_UPDATED } = data;
 
   const copy = async (code: string) => {
     try {

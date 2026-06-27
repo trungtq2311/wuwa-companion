@@ -1,7 +1,14 @@
 /**
  * Banner schedule — curated from official previews + community leaks
  * (no reliable banner API). Clearly labelled and dated; verify before pulling.
+ *
+ * The JSON in this folder is the source of truth and is fetched at runtime
+ * (see loadBanners) so the schedule can be refreshed without an app update; the
+ * imported copy below is the bundled fallback.
  */
+import { loadLive } from "@/lib/liveData";
+import bundled from "./banners.json";
+
 export interface BannerInfo {
   version: string;
   phase?: string;
@@ -13,24 +20,14 @@ export interface BannerInfo {
   end?: string;
 }
 
-export const BANNERS_LAST_UPDATED = "2026-06-26";
+export interface BannersData {
+  lastUpdated: string;
+  schedule: BannerInfo[];
+}
 
-export const BANNER_SCHEDULE: BannerInfo[] = [
-  {
-    version: "3.4",
-    phase: "Phase II",
-    status: "current",
-    type: "character",
-    featured5: ["Cartethyia"],
-    featured4: ["Yuanwu", "Aalto", "Baizhi"],
-  },
-  {
-    version: "3.5",
-    phase: "Phase I",
-    status: "upcoming",
-    type: "character",
-    featured5: ["Xuanling", "Suisui"],
-    start: "2026-07-10",
-    end: "2026-07-31",
-  },
-];
+export const BUNDLED_BANNERS = bundled as BannersData;
+
+/** Fetch the latest banner schedule from the repo (1-day cache), fall back to bundled. */
+export function loadBanners(): Promise<BannersData> {
+  return loadLive<BannersData>("src/features/banners/banners.json", BUNDLED_BANNERS);
+}

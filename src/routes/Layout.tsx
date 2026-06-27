@@ -3,12 +3,14 @@ import { Outlet, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { TopNav } from "@/components/TopNav";
 import { Loading } from "@/components/Loading";
+import { UpdateBanner } from "@/components/UpdateBanner";
 
 export function Layout() {
   const location = useLocation();
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden">
+      <UpdateBanner />
       <TopNav />
       <main className="relative flex-1 overflow-y-auto">
         <AnimatePresence mode="wait">

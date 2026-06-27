@@ -1,9 +1,10 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { CalendarClock, Radio } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { RESONATORS } from "@/data/wuwa";
 import { RarityStars } from "@/components/RarityStars";
-import { BANNER_SCHEDULE, BANNERS_LAST_UPDATED, type BannerInfo } from "./bannersData";
+import { BUNDLED_BANNERS, loadBanners, type BannerInfo } from "./bannersData";
 
 const ACCENT = "var(--color-electro)";
 
@@ -12,8 +13,19 @@ function findResonator(name: string) {
 }
 
 export function BannersPage() {
-  const current = BANNER_SCHEDULE.filter((b) => b.status === "current");
-  const upcoming = BANNER_SCHEDULE.filter((b) => b.status === "upcoming");
+  const [data, setData] = useState(BUNDLED_BANNERS);
+
+  useEffect(() => {
+    let alive = true;
+    loadBanners().then((d) => alive && setData(d));
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const BANNERS_LAST_UPDATED = data.lastUpdated;
+  const current = data.schedule.filter((b) => b.status === "current");
+  const upcoming = data.schedule.filter((b) => b.status === "upcoming");
 
   return (
     <>

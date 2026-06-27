@@ -2,7 +2,14 @@
  * Redemption codes — curated snapshot (Kuro has no public codes API).
  * Livestream codes are time-limited (~48-72h); keep `lastUpdated` honest and
  * point users to the in-game redemption + official news for the latest.
+ *
+ * The JSON in this folder is the source of truth and is fetched at runtime
+ * (see loadCodes) so codes can be refreshed without an app update; the imported
+ * copy below is the bundled fallback.
  */
+import { loadLive } from "@/lib/liveData";
+import bundled from "./codes.json";
+
 export interface GiftCode {
   code: string;
   reward: string;
@@ -10,29 +17,16 @@ export interface GiftCode {
   note?: string;
 }
 
-export const CODES_LAST_UPDATED = "2026-06-26";
+export interface CodesData {
+  lastUpdated: string;
+  codes: GiftCode[];
+  redeemSteps: string[];
+  officialNewsUrl: string;
+}
 
-export const GIFT_CODES: GiftCode[] = [
-  {
-    code: "WUTHERINGGIFT",
-    reward: "Astrite ×50 + nguyên liệu",
-    status: "permanent",
-    note: "Code vĩnh viễn cho người chơi mới.",
-  },
-  {
-    code: "WUTHERINGGIFT3",
-    reward: "Astrite + Shell Credit",
-    status: "active",
-  },
-];
+export const BUNDLED_CODES = bundled as CodesData;
 
-/** How to redeem (no public web portal confirmed as of the snapshot date). */
-export const REDEEM_STEPS = [
-  "Mở game → Terminal (góc trên trái)",
-  "Settings → Other → Redemption Code",
-  "Dán code và xác nhận",
-  "Nhận quà trong hộp thư",
-];
-
-export const OFFICIAL_NEWS_URL =
-  "https://wutheringwaves.kurogames.com/en/main/news";
+/** Fetch the latest codes from the repo (1-day cache), fall back to bundled. */
+export function loadCodes(): Promise<CodesData> {
+  return loadLive<CodesData>("src/features/codes/codes.json", BUNDLED_CODES);
+}

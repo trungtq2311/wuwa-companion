@@ -8,7 +8,7 @@ import { ElementBadge } from "@/components/ElementBadge";
 import { RarityStars } from "@/components/RarityStars";
 import { useAsync } from "@/lib/useAsync";
 import { fetchNewsList } from "@/features/news/api";
-import { BANNER_SCHEDULE } from "@/features/banners/bannersData";
+import { BUNDLED_BANNERS, loadBanners } from "@/features/banners/bannersData";
 
 const accentByPath: Record<string, string> = {
   "/resonators": "var(--color-glacio)",
@@ -27,7 +27,9 @@ export function DashboardPage() {
   const [hero] = useState(pickFeatured);
   const news = useAsync(fetchNewsList, []);
   const tiles = NAV_ITEMS.filter((n) => n.path !== "/").slice(0, 6);
-  const currentBanner = BANNER_SCHEDULE.find((b) => b.status === "current");
+  const banners = useAsync(loadBanners, []);
+  const schedule = banners.data?.schedule ?? BUNDLED_BANNERS.schedule;
+  const currentBanner = schedule.find((b) => b.status === "current");
 
   return (
     <div className="flex flex-col gap-6">

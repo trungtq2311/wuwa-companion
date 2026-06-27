@@ -1,0 +1,53 @@
+name: Release
+
+# Builds the Windows app, signs the update artifacts, and publishes a GitHub
+# Release containing the installer + `latest.json` the in-app updater reads.
+# Trigger by bumping the version in src-tauri/tauri.conf.json and pushing a
+# matching tag (app-vX.Y.Z), or run manually from the Actions tab.
+
+on:
+  push:
+    tags:
+      - "app-v*"
+  workflow_dispatch:
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Refresh game data
+        run: node scripts/build-data.mjs
+
+      - name: Build & publish release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: app-v__VERSION__
+          releaseName: "Wuthering Waves Companion v__VERSION__"
+          releaseBody: "Tải file Setup (.exe) hoặc .msi bên dưới để cài. Các bản sau app sẽ tự cập nhật."
+          releaseDraft: false
+          prerelease: false
