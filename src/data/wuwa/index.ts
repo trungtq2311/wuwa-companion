@@ -67,6 +67,8 @@ export interface Resonator {
   chains: ResonatorChain[];
   skills: ResonatorSkill[];
   ascension?: AscensionMat[];
+  /** ISO date the character first appeared in the dataset (datamine). */
+  addedAt?: string;
 }
 
 export interface Weapon {
@@ -102,4 +104,18 @@ export const MANIFEST = manifestJson as {
 
 export function getResonator(slug: string): Resonator | undefined {
   return RESONATORS.find((r) => r.slug === slug);
+}
+
+/**
+ * Characters first added to the dataset within `days` (i.e. freshly datamined —
+ * these are the genuine pre-farm targets). Auto-detected from `addedAt`, so it
+ * needs no hand-maintained list.
+ */
+export function getRecentResonators(days = 45): Resonator[] {
+  const cutoff = Date.now() - days * 86_400_000;
+  return RESONATORS.filter((r) => {
+    if (!r.addedAt) return false;
+    const t = new Date(r.addedAt + "T00:00:00").getTime();
+    return !Number.isNaN(t) && t >= cutoff;
+  }).sort((a, b) => (b.addedAt ?? "").localeCompare(a.addedAt ?? ""));
 }

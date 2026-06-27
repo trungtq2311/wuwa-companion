@@ -5,7 +5,7 @@
  *
  * Run: node scripts/build-data.mjs
  */
-import { writeFile, mkdir } from "node:fs/promises";
+import { writeFile, mkdir, readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, resolve } from "node:path";
 
@@ -279,6 +279,30 @@ async function main() {
     }))
     .filter((e) => e.name);
 
+  // ---- First-seen tracking (auto pre-farm for newly datamined characters) ----
+  // seen.json maps resonator id -> the date it first appeared in the dataset.
+  // Existing ids keep their date; brand-new ids get today's date. The app flags
+  // recently-added characters as "new" for the pre-farm section, and CI cuts a
+  // release when this file grows — all without hand-editing anything.
+  let seen = {};
+  try {
+    seen = JSON.parse(await readFile(`${OUT}/seen.json`, "utf8"));
+  } catch {
+    seen = {};
+  }
+  const today = new Date().toISOString().slice(0, 10);
+  const newcomers = [];
+  for (const r of resonators) {
+    if (!seen[r.id]) {
+      seen[r.id] = today;
+      newcomers.push(r.name);
+    }
+    r.addedAt = seen[r.id];
+  }
+  if (newcomers.length) {
+    console.log(`NEW characters this build: ${newcomers.join(", ")}`);
+  }
+
   const manifest = {
     source: "DommyMM/wuwabuild (powers wuwa.build)",
     sourceUrl: "https://github.com/DommyMM/wuwabuild",
@@ -298,6 +322,7 @@ async function main() {
     writeFile(`${OUT}/sonatas.json`, JSON.stringify(sonatas)),
     writeFile(`${OUT}/echoes.json`, JSON.stringify(echoes)),
     writeFile(`${OUT}/manifest.json`, JSON.stringify(manifest, null, 2)),
+    writeFile(`${OUT}/seen.json`, JSON.stringify(seen, null, 0)),
   ]);
 
   console.log("Wrote to", OUT);

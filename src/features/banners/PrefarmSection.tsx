@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Sprout, Clock } from "lucide-react";
-import { RESONATORS } from "@/data/wuwa";
+import { RESONATORS, getRecentResonators } from "@/data/wuwa";
 import { cdnImg } from "@/lib/img";
 import { RarityStars } from "@/components/RarityStars";
 import type { BannerInfo } from "./bannersData";
@@ -20,7 +20,12 @@ function findResonator(name: string) {
 
 export function PrefarmSection({ schedule }: { schedule: BannerInfo[] }) {
   const upcoming = schedule.filter((b) => b.status === "upcoming");
-  const names = [...new Set(upcoming.flatMap((b) => b.featured5))];
+  // Auto-detected freshly-datamined characters (no hand-maintained list) +
+  // the curated upcoming-banner names. Recent datamines come first.
+  const recentNames = getRecentResonators().map((r) => r.name);
+  const names = [
+    ...new Set([...recentNames, ...upcoming.flatMap((b) => b.featured5)]),
+  ];
   if (names.length === 0) return null;
 
   return (

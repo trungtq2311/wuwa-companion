@@ -1,8 +1,9 @@
 name: Refresh data
 
-# Re-runs the data build daily and commits the normalized JSON back to the repo
-# when it actually changed. The app fetches these files at runtime (with a local
-# TTL cache + bundled fallback), so content can refresh without an app update.
+# Re-runs the data build daily. Commits refreshed JSON back to the repo, and if
+# a brand-new character was datamined (seen.json grew) it auto-bumps the version
+# and pushes a tag — which triggers the Release workflow — so new characters and
+# their pre-farm materials ship to users with zero manual steps.
 
 on:
   schedule:
@@ -27,17 +28,43 @@ jobs:
         run: npm ci
 
       - name: Rebuild data
-        run: node scripts/build-data.mjs
+        run: |
+          before=$(node -e "try{console.log(Object.keys(require('./src/data/wuwa/seen.json')).length)}catch(e){console.log(0)}")
+          node scripts/build-data.mjs
+          after=$(node -e "console.log(Object.keys(require('./src/data/wuwa/seen.json')).length)")
+          echo "SEEN_BEFORE=$before" >> "$GITHUB_ENV"
+          echo "SEEN_AFTER=$after" >> "$GITHUB_ENV"
 
-      - name: Commit if data changed
+      - name: Commit data, and release if new characters appeared
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          if [ -n "$(git status --porcelain src/data/wuwa)" ]; then
-            git add src/data/wuwa
+          if [ -z "$(git status --porcelain src/data/wuwa)" ]; then
+            echo "No data changes."
+            exit 0
+          fi
+          git add src/data/wuwa
+          if [ "${SEEN_AFTER:-0}" -gt "${SEEN_BEFORE:-0}" ]; then
+            echo "New character(s) datamined → bumping version and releasing."
+            node -e '
+              const fs = require("fs");
+              for (const f of ["package.json", "src-tauri/tauri.conf.json"]) {
+                const j = JSON.parse(fs.readFileSync(f, "utf8"));
+                const p = j.version.split(".").map(Number);
+                p[2]++;
+                j.version = p.join(".");
+                fs.writeFileSync(f, JSON.stringify(j, null, 2) + "\n");
+              }
+            '
+            VER=$(node -e "console.log(require('./package.json').version)")
+            git add package.json src-tauri/tauri.conf.json
+            git commit -m "release: new character(s) datamined -> v$VER"
+            git push
+            git tag "app-v$VER"
+            git push origin "app-v$VER"
+            echo "Tagged app-v$VER → Release workflow will build & publish."
+          else
             git commit -m "chore(data): daily refresh [skip ci]"
             git push
-            echo "Data updated."
-          else
-            echo "No data changes."
+            echo "Data refreshed (no new characters)."
           fi
