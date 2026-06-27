@@ -1,12 +1,16 @@
-import { useState } from "react";
-import { ExternalLink, Map as MapIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ExternalLink, Map as MapIcon, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 /**
  * Embeds a community interactive map (chests, ascension materials, ores, echoes…)
  * inside the app. WuWa has no clean location API, so building accurate pins
- * ourselves isn't feasible — instead we surface the best existing maps. A
- * "open in browser" fallback always works if a site refuses to be framed.
+ * ourselves isn't feasible — instead we surface the best existing maps.
+ *
+ * In a small app window these sites collapse to a mobile layout that buries the
+ * map under a long marker list. To avoid that we render the iframe at a fixed
+ * DESKTOP width and CSS-scale it down to fit, forcing the proper map+panel
+ * layout. A zoom control + "open in browser" cover the rest.
  */
 
 const SOURCES = [
@@ -15,9 +19,33 @@ const SOURCES = [
   { id: "appsample", label: "AppSample", url: "https://wuthering-waves-map.appsample.com/" },
 ] as const;
 
+// Logical render width fed to the iframe; lower = more zoomed-in (bigger UI).
+const ZOOM_WIDTHS = [1000, 1200, 1440];
+
 export function MapPage() {
   const [active, setActive] = useState(0);
+  const [zoom, setZoom] = useState(1); // index into ZOOM_WIDTHS
   const src = SOURCES[active];
+
+  const wrapRef = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState({ scale: 1, w: ZOOM_WIDTHS[1], h: 0 });
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const vw = ZOOM_WIDTHS[zoom];
+    const update = () => {
+      const cw = el.clientWidth;
+      const ch = el.clientHeight;
+      if (cw === 0 || ch === 0) return;
+      const scale = cw / vw;
+      setBox({ scale, w: vw, h: ch / scale });
+    };
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [zoom]);
 
   async function openExternal() {
     try {
@@ -31,9 +59,8 @@ export function MapPage() {
   return (
     <div className="flex h-[calc(100vh-7.5rem)] flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex items-center gap-2 text-sm">
+        <div className="flex flex-wrap items-center gap-2 text-sm">
           <MapIcon size={16} className="text-[var(--color-accent)]" />
-          <span className="text-[var(--color-fg-muted)]">Nguồn map:</span>
           <div className="flex gap-1.5">
             {SOURCES.map((s, i) => (
               <button
@@ -51,20 +78,44 @@ export function MapPage() {
             ))}
           </div>
         </div>
-        <button
-          onClick={openExternal}
-          className="flex items-center gap-1.5 rounded-lg border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-accent)] transition hover:bg-[var(--color-accent)]/20"
-        >
-          Mở trong trình duyệt <ExternalLink size={13} />
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={() => setZoom((z) => Math.min(ZOOM_WIDTHS.length - 1, z + 1))}
+            disabled={zoom >= ZOOM_WIDTHS.length - 1}
+            title="Thu nhỏ giao diện (hiện nhiều hơn)"
+            className="rounded-lg border border-[var(--color-border-soft)] p-1.5 text-[var(--color-fg-muted)] transition hover:text-[var(--color-fg)] disabled:opacity-40"
+          >
+            <ZoomOut size={14} />
+          </button>
+          <button
+            onClick={() => setZoom((z) => Math.max(0, z - 1))}
+            disabled={zoom <= 0}
+            title="Phóng to giao diện"
+            className="rounded-lg border border-[var(--color-border-soft)] p-1.5 text-[var(--color-fg-muted)] transition hover:text-[var(--color-fg)] disabled:opacity-40"
+          >
+            <ZoomIn size={14} />
+          </button>
+          <button
+            onClick={openExternal}
+            className="flex items-center gap-1.5 rounded-lg border border-[var(--color-accent)]/40 bg-[var(--color-accent)]/10 px-3 py-1.5 text-xs font-medium text-[var(--color-accent)] transition hover:bg-[var(--color-accent)]/20"
+          >
+            Mở trình duyệt <ExternalLink size={13} />
+          </button>
+        </div>
       </div>
 
-      <div className="glass relative flex-1 overflow-hidden">
+      <div ref={wrapRef} className="glass relative flex-1 overflow-hidden">
         <iframe
-          key={src.id}
+          key={`${src.id}-${zoom}`}
           src={src.url}
           title={`Wuthering Waves map — ${src.label}`}
-          className="absolute inset-0 h-full w-full border-0"
+          style={{
+            width: `${box.w}px`,
+            height: `${box.h}px`,
+            transform: `scale(${box.scale})`,
+            transformOrigin: "top left",
+            border: 0,
+          }}
           referrerPolicy="no-referrer"
           loading="lazy"
         />
@@ -72,7 +123,8 @@ export function MapPage() {
 
       <p className="text-xs text-[var(--color-fg-faint)]">
         * Map do cộng đồng xây dựng (rương, nguyên liệu nâng cấp, ore, echo…).
-        Nếu trang không hiện trong khung, bấm <b>Mở trong trình duyệt</b>.
+        Cửa sổ nhỏ thì giao diện thu nhỏ theo — dùng nút zoom, hoặc bấm <b>Mở
+        trình duyệt</b> để xem toàn màn hình.
       </p>
     </div>
   );

@@ -92,6 +92,8 @@ async function main() {
         name: nameEn,
         nameLocal: local(c.name),
         rarity: c.rarity?.id ?? 4,
+        // legacyId is the in-game resonator sequence ≈ release order (string upstream).
+        releaseOrder: Number(c.legacyId) || 9999,
         element: {
           id: c.element?.id ?? 0,
           name: en(c.element?.name),

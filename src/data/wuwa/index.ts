@@ -58,6 +58,8 @@ export interface Resonator {
   name: string;
   nameLocal: string;
   rarity: number;
+  /** in-game resonator sequence (legacyId) ≈ release order */
+  releaseOrder?: number;
   element: ResonatorElement;
   weapon: { id: number; name: string };
   images: ResonatorImages;

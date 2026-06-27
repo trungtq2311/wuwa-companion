@@ -22,7 +22,13 @@ export function ResonatorsPage() {
       if (weapon !== "all" && r.weapon.name !== weapon) return false;
       if (rarity !== "all" && r.rarity !== rarity) return false;
       return true;
-    });
+    }).sort(
+      // 4★ first, then 5★; within each, by in-game release order.
+      (a, b) =>
+        a.rarity - b.rarity ||
+        (a.releaseOrder ?? 9999) - (b.releaseOrder ?? 9999) ||
+        a.name.localeCompare(b.name),
+    );
   }, [query, element, weapon, rarity]);
 
   const hasFilters =
