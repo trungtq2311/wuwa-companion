@@ -23,10 +23,10 @@ export function ResonatorsPage() {
       if (rarity !== "all" && r.rarity !== rarity) return false;
       return true;
     }).sort(
-      // 4★ first, then 5★; within each, by in-game release order.
+      // Newest first: by in-game release order descending (5★ before 4★ on ties).
       (a, b) =>
-        a.rarity - b.rarity ||
-        (a.releaseOrder ?? 9999) - (b.releaseOrder ?? 9999) ||
+        (b.releaseOrder ?? 0) - (a.releaseOrder ?? 0) ||
+        b.rarity - a.rarity ||
         a.name.localeCompare(b.name),
     );
   }, [query, element, weapon, rarity]);
