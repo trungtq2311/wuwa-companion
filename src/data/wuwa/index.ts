@@ -18,6 +18,9 @@ export interface ResonatorImages {
   banner: string | null;
   elementIcon: string | null;
   weaponIcon: string | null;
+  /** Convene (gacha) key art + its background — only featured 5★ have these. */
+  gachaArt?: string | null;
+  gachaBg?: string | null;
 }
 
 export interface ResonatorBaseStats {

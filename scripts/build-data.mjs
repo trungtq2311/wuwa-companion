@@ -78,10 +78,31 @@ async function main() {
   const echoesRaw = await fetchJson("Echoes.json");
   const fettersRaw = await fetchJson("Fetters.json").catch(() => null);
 
+  // Featured-5★ gacha (Convene) key art on the wuthery CDN. Only characters who
+  // had a solo banner have this art, and it's named by internal codename — so we
+  // map the ones that exist. The big background is composited behind the figure
+  // for a real "banner" look (falls back to the Pile render when absent).
+  const LUCKDRAW_BASE =
+    "https://files.wuthery.com/d/GameData/UIResources/Common/Image/Luckdraw";
+  const LUCKDRAW = {
+    Changli: "Changli",
+    Camellya: "Chun",
+    Jianxin: "Jianxin",
+    Jinhsi: "Jinxi",
+    Calcharo: "Kakaluo",
+    Lingyang: "Lingyang",
+    Shorekeeper: "Shouanren",
+    Verina: "Weilinai",
+    "Xiangli Yao": "Xiangliyao",
+    Zhezhi: "Zhezhi",
+    Encore: "Anke",
+  };
+
   // ---- Resonators ----
   const resonators = chars
     .map((c) => {
       const nameEn = en(c.name);
+      const ld = LUCKDRAW[nameEn];
       const elementIcon =
         c.element?.icon && typeof c.element.icon === "object"
           ? c.element.icon["1"] || Object.values(c.element.icon)[0]
@@ -105,6 +126,8 @@ async function main() {
           banner: c.icon?.banner || null,
           elementIcon: elementIcon || null,
           weaponIcon: c.weapon?.icon || null,
+          gachaArt: ld ? `${LUCKDRAW_BASE}/T_LuckdraRole${ld}.png` : null,
+          gachaBg: ld ? `${LUCKDRAW_BASE}/T_LuckdraRole${ld}Bg.png` : null,
         },
         baseStats: {
           hp: c.stats?.Life ?? null,
