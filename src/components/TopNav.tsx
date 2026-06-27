@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Waves } from "lucide-react";
+import { Waves, RefreshCw } from "lucide-react";
 import { NAV_ITEMS } from "@/routes/nav";
+import { useUpdaterStore } from "@/stores/updaterStore";
 import { cn } from "@/lib/utils";
 
 export function TopNav() {
   const [version, setVersion] = useState<string>("");
+  const updPhase = useUpdaterStore((s) => s.phase);
+  const checkUpdate = useUpdaterStore((s) => s.check);
+  const checking = updPhase === "checking";
   useEffect(() => {
     // Real app version from the Tauri runtime (matches the installed build);
     // stays blank in the browser/dev preview.
@@ -67,11 +71,15 @@ export function TopNav() {
         ))}
       </nav>
 
-      {version && (
-        <span className="hidden shrink-0 text-[11px] text-[var(--color-fg-faint)] sm:block">
-          v{version}
-        </span>
-      )}
+      <button
+        onClick={() => checkUpdate(true)}
+        disabled={checking}
+        title="Kiểm tra cập nhật"
+        className="flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] text-[var(--color-fg-faint)] transition-colors hover:bg-white/[0.04] hover:text-[var(--color-fg)] disabled:opacity-60"
+      >
+        <RefreshCw size={13} className={checking ? "animate-spin" : ""} />
+        {version && <span className="hidden sm:inline">v{version}</span>}
+      </button>
     </header>
   );
 }
