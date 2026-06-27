@@ -6,6 +6,7 @@ import { RESONATORS } from "@/data/wuwa";
 import { RarityStars } from "@/components/RarityStars";
 import { BUNDLED_BANNERS, loadBanners, type BannerInfo } from "./bannersData";
 import { BannerCountdown } from "./BannerCountdown";
+import { PrefarmSection } from "./PrefarmSection";
 
 const ACCENT = "var(--color-electro)";
 
@@ -47,6 +48,8 @@ export function BannersPage() {
         title="Sắp tới (theo preview/leak)"
         banners={upcoming}
       />
+      <div className="h-6" />
+      <PrefarmSection schedule={data.schedule} />
     </>
   );
 }
