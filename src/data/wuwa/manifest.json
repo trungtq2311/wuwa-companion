@@ -4,9 +4,9 @@
   "imagesCdn": "files.wuthery.com",
   "fetchedAt": "2026-06-26",
   "counts": {
-    "resonators": 64,
-    "weapons": 124,
+    "resonators": 65,
+    "weapons": 125,
     "echoes": 187,
-    "sonatas": 0
+    "sonatas": 37
   }
 }
